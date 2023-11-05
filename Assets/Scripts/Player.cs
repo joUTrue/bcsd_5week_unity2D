@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
 
     Animator animator;
 
+    public GameManager gameManager;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -102,6 +104,11 @@ public class Player : MonoBehaviour
                     isTouchLeft = true;
                     break;
             }
+        }
+        else if (collision.gameObject.tag =="Enemy"||collision.gameObject.tag == "EnemyBullet")
+        {
+            gameManager.RespwanPlayer();
+            gameObject.SetActive(false);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

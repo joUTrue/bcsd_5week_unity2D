@@ -4,20 +4,61 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public string enemyName = "S";
+
     public float speed = 1;
     public int health = 10;
     public Sprite[] sprites;
 
+    public GameObject bulletObjA, bulletObjB;
+    public float maxShotDelay = 0.2f;
+    public float curShotDelay;
+
+    public GameObject player;
+
     SpriteRenderer spriteRenderer;
-    Rigidbody2D rigidbody2D;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        rigidbody2D = GetComponent<Rigidbody2D>();
-        rigidbody2D.velocity = Vector2.down * speed;
     }
 
+    void Update()
+    {
+        Fire();
+        Reload();
+    }
+
+    void Fire()
+    {
+        if (curShotDelay < maxShotDelay) return;
+        if(enemyName == "S")
+        {
+            GameObject bullet = Instantiate(bulletObjA, transform.position, transform.rotation);
+            Rigidbody2D rigidbody2d = bullet.GetComponent<Rigidbody2D>();
+
+            Vector3 dirVec = player.transform.position - transform.position;
+            rigidbody2d.AddForce(dirVec, ForceMode2D.Impulse);
+        }
+        else if(enemyName == "L") 
+        {
+            GameObject bulletR = Instantiate(bulletObjA, transform.position+ Vector3.right*0.3f, transform.rotation);
+            Rigidbody2D rigidbody2dR = bulletR.GetComponent<Rigidbody2D>();
+            GameObject bulletL = Instantiate(bulletObjA, transform.position - Vector3.right * 0.3f, transform.rotation);
+            Rigidbody2D rigidbody2dL = bulletL.GetComponent<Rigidbody2D>();
+            
+            Vector3 dirVec = (player.transform.position - transform.position).normalized;
+            rigidbody2dR.AddForce(dirVec, ForceMode2D.Impulse);
+            rigidbody2dL.AddForce(dirVec, ForceMode2D.Impulse);
+        }
+                
+        
+        curShotDelay = 0;
+    }
+    void Reload()
+    {
+        curShotDelay += Time.deltaTime;
+    }
     void OnHit(int dmg)
     {
         health -= dmg;
